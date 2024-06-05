@@ -2,6 +2,8 @@ import { Box, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import StatusDots from "./StatusDots";
 import { Delete, Edit } from "@mui/icons-material";
+import { useDispatch } from "react-redux";
+import { deleteTask, startEditAction } from "../../actions/taskActions";
 
 function getStatusColor(status) {
   switch (status) {
@@ -15,6 +17,8 @@ function getStatusColor(status) {
 }
 
 const TaskItem = ({ task }) => {
+  const dispatch = useDispatch();
+
   return (
     <Stack
       className="task-item"
@@ -42,8 +46,11 @@ const TaskItem = ({ task }) => {
       </Typography>
       <Box sx={{ flexGrow: 1 }} />
       <Stack direction="row" spacing={1} sx={{ cursor: "pointer" }}>
-        <Edit color="secondary" />
-        <Delete color="error" />
+        <Edit
+          color="secondary"
+          onClick={() => dispatch(startEditAction(task))}
+        />
+        <Delete color="error" onClick={() => dispatch(deleteTask(task.id))} />
       </Stack>
     </Stack>
   );

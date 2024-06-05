@@ -1,14 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const dummyTasks = [
+  {
+    id: 1,
+    title: "Buy milk",
+    status: "todo",
+  },
+  {
+    id: 2,
+    title: "Buy eggs",
+    status: "todo",
+  },
+  {
+    id: 3,
+    title: "Do homework",
+    status: "inProgress",
+  },
+  {
+    id: 4,
+    title: "Cook dinner",
+    status: "inProgress",
+  },
+  {
+    id: 5,
+    title: "Call mom",
+    status: "done",
+  },
+];
+
+let globalIdCounter = 5;
+
 export const taskSlice = createSlice({
   name: "task",
   initialState: {
-    taskList: [],
+    taskList: dummyTasks,
     editingTask: null,
   },
   reducers: {
     addTask: (state, action) => {
-      state.taskList.push(action.payload);
+      state.taskList.push({
+        id: globalIdCounter + 1,
+        title: action.payload,
+        status: "todo",
+      });
+      globalIdCounter++;
     },
     deleteTask: (state, action) => {
       state.taskList = state.taskList.filter(
@@ -23,7 +58,12 @@ export const taskSlice = createSlice({
     },
     editTask: (state, action) => {
       state.taskList = state.taskList.map((task) =>
-        task.id === action.payload.id ? action.payload : task
+        task.id === action.payload.id
+          ? {
+              ...task,
+              title: action.payload.task,
+            }
+          : task
       );
       state.editingTask = null;
     },

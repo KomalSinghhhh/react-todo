@@ -1,7 +1,10 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Stack, Tooltip } from "@mui/material";
 import { colors } from "@mui/material";
 import PropTypes from "prop-types";
+
+import { changeStatus } from "../../actions/taskActions";
 
 const Dot = React.forwardRef(function Dot({ color, ...props }, ref) {
   return (
@@ -23,18 +26,33 @@ Dot.propTypes = {
 };
 
 const StatusDots = ({ task }) => {
+  const dispatch = useDispatch();
+
   return (
     <Stack direction="row" spacing={1} sx={{ cursor: "pointer" }}>
       <Tooltip title="To Do" placement="top" arrow>
-        <Dot color={task.status === "todo" ? colors.red[400] : "gray"} />
+        <Dot
+          color={task.status === "todo" ? colors.red[400] : "gray"}
+          onClick={() =>
+            dispatch(changeStatus({ id: task.id, status: "todo" }))
+          }
+        />
       </Tooltip>
       <Tooltip title="In Progress" placement="top" arrow>
         <Dot
           color={task.status === "inProgress" ? colors.yellow[900] : "gray"}
+          onClick={() =>
+            dispatch(changeStatus({ id: task.id, status: "inProgress" }))
+          }
         />
       </Tooltip>
       <Tooltip title="Done" placement="top" arrow>
-        <Dot color={task.status === "done" ? colors.green[500] : "gray"} />
+        <Dot
+          color={task.status === "done" ? colors.green[500] : "gray"}
+          onClick={() =>
+            dispatch(changeStatus({ id: task.id, status: "done" }))
+          }
+        />
       </Tooltip>
     </Stack>
   );
