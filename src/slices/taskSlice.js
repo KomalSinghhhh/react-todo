@@ -1,5 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const loadTasksFromLocalStorage = () => {
+  const serializedTasks = localStorage.getItem("tasks");
+  if (serializedTasks === null) {
+    return [];
+  }
+  return JSON.parse(serializedTasks);
+};
+
+const saveTasksToLocalStorage = (tasks) => {
+  const serializedTasks = JSON.stringify(tasks);
+  localStorage.setItem("tasks", serializedTasks);
+};
+
 const dummyTasks = [
   {
     id: 1,
@@ -30,25 +43,30 @@ const dummyTasks = [
 
 let globalIdCounter = 5;
 
+const initialState = {
+  taskList: loadTasksFromLocalStorage() || dummyTasks,
+  editingTask: null,
+};
+
 export const taskSlice = createSlice({
   name: "task",
-  initialState: {
-    taskList: dummyTasks,
-    editingTask: null,
-  },
+  initialState,
   reducers: {
     addTask: (state, action) => {
-      state.taskList.push({
+      const newTask = {
         id: globalIdCounter + 1,
         title: action.payload,
         status: "todo",
-      });
+      };
+      state.taskList.push(newTask);
       globalIdCounter++;
+      saveTasksToLocalStorage(state.taskList);
     },
     deleteTask: (state, action) => {
       state.taskList = state.taskList.filter(
         (task) => task.id !== action.payload
       );
+      saveTasksToLocalStorage(state.taskList);
     },
     startEditAction: (state, action) => {
       state.editingTask = action.payload;
@@ -66,10 +84,12 @@ export const taskSlice = createSlice({
           : task
       );
       state.editingTask = null;
+      saveTasksToLocalStorage(state.taskList);
     },
     changeStatus: (state, action) => {
       const task = state.taskList.find((task) => task.id === action.payload.id);
       task.status = action.payload.status;
+      saveTasksToLocalStorage(state.taskList);
     },
   },
 });
